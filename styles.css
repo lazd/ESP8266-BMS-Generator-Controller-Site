@@ -57,6 +57,7 @@ body {
   animation-direction: alternate;
   animation-iteration-count: infinite;
   animation-play-state: running;
+  transition: opacity 1s ease-out;
 }
 
 .generator-meter {
@@ -79,20 +80,14 @@ body {
   transform-origin: center;
 }
 
-.battery-charge-fill {
-  transition: transform 0.5s ease-out;
+.powerSource.is-charging .battery-charge-fill {
+  animation: float 1s ease-in-out infinite alternate;
+  --charge-level: 1;
 }
 
-.is-off .battery-charging {
-  display: none;
-}
-
-.battery-charging {
-  visibility: hidden;
-}
-
-.is-charging .battery-charging {
-  visibility: visible;
+.powerSource:not(.is-charging) .battery-charging {
+  animation-name: unset;
+  opacity: 0;
 }
 
 .is-off .power-plant-cloud {
@@ -101,6 +96,16 @@ body {
 
 .is-off .generator-meter {
   animation-name: unset;
+}
+
+@keyframes float {
+  0% {
+    transform: scaleY(calc(var(--charge-level) * 0.99));
+  }
+
+  100% {
+    transform: scaleY(calc(var(--charge-level) * 1.01));
+  }
 }
 
 @keyframes throb {
