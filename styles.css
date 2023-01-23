@@ -1,0 +1,124 @@
+:root {
+    --gap: 5rem;
+}
+
+html {
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    background: rgb(35, 35, 35);
+}
+
+html,
+body {
+    margin: 0;
+}
+
+.power-sources {
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap);
+    margin: var(--gap);
+}
+
+.home,
+.power-source {
+    display: block;
+    width: 12rem;
+    height: 12rem;
+    transition: filter;
+}
+
+.home {
+    margin: var(--gap) auto;
+}
+
+.power-source.is-off {
+    filter: grayscale(1);
+}
+
+.battery-charging {
+    animation-name: throb;
+    animation-duration: 1s;
+    animation-timing-function: ease-out;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+    animation-play-state: running;
+}
+
+.generator-meter {
+    transform-origin: 50% 50%;
+    animation-name: meter;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+    animation-play-state: running;
+    --animation-distance: 18deg;
+}
+
+.power-plant-cloud {
+    animation-name: puff;
+    animation-duration: 2s;
+    animation-timing-function: ease-in;
+    animation-iteration-count: infinite;
+    animation-play-state: running;
+    transform-origin: center;
+}
+
+.battery-charge-fill {
+    transition: transform 0.5s ease-out;
+}
+
+.is-off .battery-charging {
+    display: none;
+}
+
+.battery-charging {
+    visibility: hidden;
+}
+
+.is-charging .battery-charging {
+    visibility: visible;
+}
+
+.is-off .power-plant-cloud {
+    display: none;
+}
+
+.is-off .generator-meter {
+    animation-name: unset;
+}
+
+@keyframes throb {
+    0% {
+        opacity: 0.25;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes meter {
+    0% {
+        transform: rotate(calc(-1 *var(--animation-distance)));
+    }
+
+    100% {
+        transform: rotate(var(--animation-distance));
+    }
+}
+
+@keyframes puff {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
