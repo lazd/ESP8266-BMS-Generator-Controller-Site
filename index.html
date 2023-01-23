@@ -4,12 +4,12 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500&display=swap" rel="stylesheet">
   </head>
   <body>
       <h1>Power Status</h1>
       <div class="powerSources">
-        <div class="powerSource is-off">
+        <div class="powerSource powerSource--generator is-off">
           <svg class="powerSource-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 428.05 412.42">
             <defs>
                 <clipPath id="generator-clip">
@@ -47,6 +47,7 @@
             <rect x="214.025" y="70" width="214" height="350" clip-path="url(#generator-clip)" style="fill: #000; opacity: 0.1"/>
           </svg>
           <p class="powerSource-info">Off</p>
+          <p class="powerSource-details">Since Jan 14th, 2:30PM</p>
         </div>
 
         <div class="powerSource powerSource--battery is-charging">
@@ -70,16 +71,17 @@
   
             <rect x="22" y="82" width="468" height="338" style="fill: #73859e; opacity: 0.5" rx="30"/>
             <g clip-path="url(#battery-clip)">
-              <g style="transform: scaleY(var(--charge-level, 1)); transform-origin: 0 418px;" class="battery-charge-fill">
+              <g style="transform: scaleY(var(--charge-level, 1)); transform-origin: 0 418px;" class="powerSource-chargeLevel">
                 <rect x="22" y="82" width="234" height="338" style="fill: #5da33d;"/>
                 <rect x="256" y="82" width="234" height="338" style="fill: #4b8e38;"/>
               </g>
             </g>
-            <g class="battery-charging">
+            <g class="powerSource-chargeSymbol">
               <path d="m244.88,324.3c-3.72,0-7.46-1.23-10.57-3.77-7.13-5.84-8.18-16.36-2.35-23.49l27.78-33.95h-42.68c-6.45,0-12.33-3.72-15.09-9.54-2.76-5.83-1.92-12.73,2.16-17.72l50.09-61.22c5.85-7.14,16.35-8.19,23.5-2.35,7.13,5.84,8.18,16.36,2.35,23.49l-27.78,33.95h42.68c6.45,0,12.33,3.72,15.09,9.54,2.76,5.83,1.92,12.73-2.16,17.72l-50.09,61.22c-3.31,4.04-8.1,6.12-12.94,6.12Z" style="fill: #5ce6e6;"/>
             </g>
           </svg>
-          <p class="powerSource-info battery-charge-text">100%</p>
+          <p class="powerSource-info">100%</p>
+          <p class="powerSource-details">Charging</p>
         </div>
 
         <div class="powerSource">
@@ -112,6 +114,7 @@
             <path d="m773.88,747.79h-373.9v52.17h373.9c14.41,0,26.09-11.68,26.09-26.09,0-14.41-11.68-26.09-26.09-26.09Z" style="fill: #485566;"/>
           </svg>
           <p class="powerSource-info">On</p>
+          <p class="powerSource-details">Since Jan 14th, 2:30PM</p>
         </div>
     </div>
 
@@ -129,27 +132,89 @@
       function handleClick(e) {
         let powerSource = e.target.closest('.powerSource');
         if (powerSource) {
+          const info = powerSource.querySelector('.powerSource-info');
+          const details = powerSource.querySelector('.powerSource-details');
           if (powerSource.classList.contains('powerSource--battery')) {
-            powerSource.classList.toggle('is-charging');
+            if (powerSource.classList.contains('is-charging')) {
+              stopCharging();
+            }
+            else {
+              startCharging();
+            }
+          }
+          else if (powerSource.classList.contains('powerSource--generator')) {
+            if (powerSource.classList.contains('is-off')) {
+              powerSource.classList.remove('is-off');
+              info.innerText = 'Running';
+            }
+            else if (powerSource.classList.contains('is-coolingDown')) {
+              powerSource.classList.add('is-off');
+              powerSource.classList.remove('is-coolingDown');
+              info.innerText = 'Off';
+            }
+            else {
+              powerSource.classList.add('is-coolingDown');
+              powerSource.classList.remove('is-off');
+              info.innerText = 'Cooling down';
+            }
           }
           else {
             powerSource.classList.toggle('is-off');
-            const info = powerSource.querySelector('.powerSource-info:not(.battery-charge-text)');
-            if (info) {
-              info.innerText = powerSource.classList.contains('is-off') ? 'Off' : 'On';
-            }
+            info.innerText = powerSource.classList.contains('is-off') ? 'Off' : 'On';
           }
         }
       }
       document.addEventListener('click', handleClick);
 
-      function setBatteryLevel(level) {
-        const batteryFillEl = document.querySelector('.battery-charge-fill');
-        batteryFillEl.style.setProperty('--charge-level', level);
-        const batteryChargeTextEl = document.querySelector('.battery-charge-text');
-        batteryChargeTextEl.innerText = Math.round(level * 100) + '%';
+      let chargeInterval;
+      let currentBatteryLevel = 1;
+      const chargeIncrement = 0.01;
+      function charge() {
+        let newChargeLevel = currentBatteryLevel + chargeIncrement;
+        if (newChargeLevel > 1) {
+          newChargeLevel = 1;
+          stopCharging();
+        }
+        setBatteryLevel(newChargeLevel);
       }
+
+      function startCharging() {
+        clearInterval(chargeInterval);
+        const powerSource = document.querySelector('.powerSource--battery');
+        chargeInterval = setInterval(charge, 4000);
+        charge();
+      }
+
+      function stopCharging() {
+        clearInterval(chargeInterval);
+        const powerSource = document.querySelector('.powerSource--battery');
+        const details = powerSource.querySelector('.powerSource-details');
+        powerSource.classList.remove('is-charging');
+        details.innerText = 'Charging stopped';
+      }
+
+      function setBatteryLevel(level) {
+        const powerSource = document.querySelector('.powerSource--battery');
+        const info = powerSource.querySelector('.powerSource-info');
+        const details = powerSource.querySelector('.powerSource-details');
+        const batteryFillEl = document.querySelector('.powerSource-chargeLevel');
+        batteryFillEl.style.setProperty('--charge-level', level);
+        info.innerText = Math.floor(level * 100) + '%';
+        currentBatteryLevel = level;
+        if (level >= 1) {
+          details.innerText = 'Charged';
+          powerSource.classList.remove('is-charging');
+          powerSource.classList.add('is-charged');
+        }
+        else {
+          details.innerText = 'Charging';
+          powerSource.classList.add('is-charging');
+          powerSource.classList.remove('is-charged');
+        }
+      }
+ 
       setBatteryLevel(0.7);
+      startCharging();
     </script>
   </body>
 </html>

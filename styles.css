@@ -2,6 +2,12 @@
   --gap: 5rem;
 }
 
+@property --charge-level {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
 html {
   font-size: 20px;
   font-family: 'Kanit', Arial, Helvetica, sans-serif;
@@ -23,7 +29,7 @@ h1 {
 .powerSources {
   margin: auto;
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: center;
   gap: var(--gap);
   margin: var(--gap);
@@ -38,7 +44,13 @@ h1 {
 
 .powerSource-info {
   font-weight: 500;
-  font-size: 2rem;
+  font-size: 1.75rem;
+  margin-block: 0.25rem 0;
+}
+
+.powerSource-details {
+  margin: 0;
+  font-weight: 400;
 }
 
 .home,
@@ -56,52 +68,54 @@ h1 {
   filter: grayscale(1);
 }
 
-.battery-charging {
-  animation-name: throb;
-  animation-duration: 1s;
-  animation-timing-function: ease-out;
-  animation-direction: alternate;
-  animation-iteration-count: infinite;
-  animation-play-state: running;
-  transition: opacity 1s ease-out;
-}
-
 .generator-meter {
   transform-origin: 50% 50%;
-  animation-name: meter;
-  animation-duration: 1s;
-  animation-timing-function: ease-in-out;
-  animation-direction: alternate;
-  animation-iteration-count: infinite;
-  animation-play-state: running;
+  animation: meter 1s ease-in-out infinite alternate;
   --animation-distance: 18deg;
 }
 
+.powerSource.is-off .generator-meter {
+  animation-play-state: paused;
+}
+
 .power-plant-cloud {
-  animation-name: puff;
-  animation-duration: 2s;
-  animation-timing-function: ease-in;
-  animation-iteration-count: infinite;
-  animation-play-state: running;
+  animation: puff 2s ease-in infinite;
   transform-origin: center;
 }
 
-.powerSource.is-charging .battery-charge-fill {
+.powerSource.is-off .power-plant-cloud {
+  visibility: hidden;
+}
+
+.powerSource-chargeSymbol {
+  animation: throb 1s ease-in-out infinite alternate;
+  transition: opacity 1s ease-out;
+}
+
+.powerSource--battery .powerSource-chargeLevel {
   animation: float 1s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+
+.powerSource--battery.is-charging .powerSource-chargeLevel {
+  animation-play-state: running;
+  --charge-level: 1;
+  transition: --charge-level 0.5s ease-out;
+}
+
+.powerSource--battery.is-charged .powerSource-chargeLevel {
+  animation-name: unset;
   --charge-level: 1;
 }
 
-.powerSource:not(.is-charging) .battery-charging {
-  animation-name: unset;
-  opacity: 0;
+.powerSource--battery .powerSource-chargeSymbol {
+  animation-play-state: paused;
+  visibility: hidden;
 }
 
-.is-off .power-plant-cloud {
-  display: none;
-}
-
-.is-off .generator-meter {
-  animation-name: unset;
+.powerSource--battery.is-charging .powerSource-chargeSymbol {
+  animation-play-state: running;
+  visibility: visible;
 }
 
 @keyframes float {
