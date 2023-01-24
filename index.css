@@ -1,7 +1,3 @@
-:root {
-  --gap: 5rem;
-}
-
 [hidden] {
   display: none !important;
 }
@@ -17,6 +13,10 @@ html {
   font-family: 'Kanit', Arial, Helvetica, sans-serif;
   background: rgb(35, 35, 35);
   color: white;
+
+  --gap: 5rem;
+  --spacing: 2rem;
+  --powerSource-size: 12rem;
 }
 
 html,
@@ -33,8 +33,9 @@ h1 {
 .infoSection {
   display: flex;
   flex-direction: row;
+  align-items: center;
   max-width: 40rem;
-  margin: 2rem auto;
+  margin: var(--spacing);
   gap: 1rem;
 }
 
@@ -71,6 +72,7 @@ h1 {
   display: flex;
   align-items: start;
   justify-content: center;
+  flex-wrap: wrap;
   gap: var(--gap);
   margin: var(--gap);
 }
@@ -96,8 +98,8 @@ h1 {
 .home,
 .powerSource-icon {
   display: block;
-  width: 12rem;
-  height: 12rem;
+  width: var(--powerSource-size);
+  height: var(--powerSource-size);
 }
 
 .home {
@@ -198,4 +200,13 @@ h1 {
     transform: scale(1);
     opacity: 0;
   }
+}
+
+@media only screen and (max-width: 600px) {
+  html {
+    font-size: 14px;
+
+    --gap: 1.5rem;
+    --powerSource-size: 6.5rem;
+}
 }

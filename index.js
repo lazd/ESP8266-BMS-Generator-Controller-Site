@@ -7,7 +7,7 @@ function getJSON(url) {
     req.addEventListener('load', () => {
       let object;
       try {
-        object = JSON.parse(this.responseText);
+        object = JSON.parse(req.responseText);
         resolve(object);
       }
       catch (err) {
@@ -121,20 +121,41 @@ function parseAlarm(alarm, data) {
 function showAlarms(data) {
   let alarmInfoSection = document.querySelector('.infoSection--alarms');
   let infoSectionEntires = alarmInfoSection.querySelector('.infoSection-entries');
-  infoSectionEntires.innerHTML = '';
   if (data.alarms) {
     alarmInfoSection.removeAttribute('hidden');
+
+    const entryHTML = [];
     for (let alarm in data.alarms) {
-      infoSectionEntires.innerHTML += `<li>${parseAlarm(alarm)}<li>\n`;
+      entryHTML.push(`<li>${parseAlarm(alarm)}<li>\n`);
     }
-  }
+    infoSectionEntires.innerHTML = entryHTML.join('\n');
+}
   else {
     alarmInfoSection.setAttribute('hidden', '');
   }
 }
 
+const infoEntries = [
+  ['packSOC', 'Charge Level', v => Math.floor(v * 100) + '%'],
+  ['packVoltage', 'Voltage'],
+  ['packCurrent', 'Current', v => Math.floor(v * 100) + 'A'],
+  ['bmsCycles', 'Cycles'],
+  ['cellDiff', 'Cell ΔV', v => `${v * 100}V`],
+  ['cellBalanceActive', 'Balancing', v => v ? 'Yes' : 'No'],
+  ['resCapacitymAh', 'Remaining Capacity', v => `${v}mAh`]
+];
+
 function showInfo(data) {
-  alarmInfoSection.removeAttribute('hidden');
+  let infoSection = document.querySelector('.infoSection--info');
+  let infoSectionEntires = infoSection.querySelector('.infoSection-entries');
+  infoSection.removeAttribute('hidden');
+
+  const entryHTML = [];
+  for (let [key, label, fn] of infoEntries) {
+    const value = typeof fn === 'function' ? fn(data[key]) : data[key];
+    entryHTML.push(`<li>${label}: <strong>${value}</strong><li>`);
+  }
+  infoSectionEntires.innerHTML = entryHTML.join('\n');
 }
 
 function updateUI(data) {
@@ -159,7 +180,7 @@ async function fetchUpdate() {
 
   updateUI(data);
 
-  setTimeout(updateUI, UPDATE_INTERVAL);
+  setTimeout(fetchUpdate, UPDATE_INTERVAL);
 }
 
 fetchUpdate();
