@@ -26,7 +26,7 @@ h1 {
   margin: 2rem;
 }
 
-.alarms {
+.infoSection {
   display: flex;
   flex-direction: row;
   max-width: 40rem;
@@ -34,29 +34,29 @@ h1 {
   gap: 1rem;
 }
 
-.alarms-icon {
+.infoSection-icon {
   width: 3.5rem;
   height: 3.5rem;
 }
 
-.alarms-heading {
+.infoSection-heading {
   margin: 0;
   font-size: 1.5rem
   font-weight: 500;
 }
 
-.alarms-entries {
+.infoSection-entries {
   list-style: none;
   margin-block: 0.5rem 0;
   padding-inline: 0.25rem 0;
   font-size: 1rem;
 }
 
-.alarms-entries strong {
+.infoSection-entries strong {
   opacity: 0.7;
 }
 
-.alarms-columns {
+.infoSection-columns {
   display: flex;
   flex-direction: row;
   gap: 2rem

@@ -29,10 +29,10 @@ function getJSON(url) {
 }
 
 const batteryStatusMap = new Map([
-  [-1, "Offline"],
-  [0, "Standby"],
-  [1, "Charging"],
-  [2, "Discharging"]
+  [-1, 'Offline'],
+  [0, 'Standby'],
+  [1, 'Charging'],
+  [2, 'Discharging']
 ]);
 
 function getPowerSourceEls(selector) {
@@ -68,10 +68,10 @@ function setBatteryStatus(data) {
 }
 
 function setGeneratorStatus(data) {
-  const { powerSource, info, details } = getPowerSourceEls('.powerSource--generator')
+  const { powerSource, info, details } = getPowerSourceEls('.powerSource--generator');
 
-  if (response.generatorOn) {
-    if (response.generatorStopRequested) {
+  if (data.generatorOn) {
+    if (data.generatorStopRequested) {
       powerSource.classList.add('is-coolingDown');
       powerSource.classList.remove('is-off');
       info.innerText = 'Cooling down';
@@ -89,9 +89,46 @@ function setGeneratorStatus(data) {
   }
 }
 
-function setGridStatus(response) {}
-function showAlarms(response) {}
-function showInfo(response) {}
+function setGridStatus(data) {
+  const { powerSource, info, details } = getPowerSourceEls('.powerSource--grid');
+
+  if (data.gridPowerOn) {
+    powerSource.classList.remove('is-off');
+    info.innerText = 'On';
+  }
+  else {
+    powerSource.classList.add('is-off');
+    info.innerText = 'Off';
+  }
+}
+
+const alarmMap = new Map([
+  ['levelOneCellVoltageTooHigh', (data) => `Cell ${data.maxCellVNum} voltage too high (level 1): <strong>${data.maxCellmV}</strong>`],
+  ['levelTwoCellVoltageTooHigh', (data) => `Cell ${data.maxCellVNum} voltage too high (level 2): <strong>${data.maxCellmV}</strong>`],
+  ['levelTwoCellVoltageTooLow', (data) => `Cell ${data.minCellVNum} voltage too low (level 2): <strong>${data.minCellmV}</strong>`],
+  ['levelTwoCellVoltageTooLow', (data) => `Cell ${data.minCellVNum} voltage too low (level 2): <strong>${data.minCellmV}</strong>`],
+]);
+
+function parseAlarm(alarm, data) {
+  const alarmFunc = alarmMap.get(alarm);
+  if (alarmFunc) {
+    return alarmFunc(data);
+  }
+  const convertedAlarm = alarm.replace(/([A-Z])/g, ' $1');
+  return convertedAlarm.charAt(0).toUpperCase() + convertedAlarm.slice(1);
+}
+
+function showAlarms(data) {
+  let infoSectionEntires = document.querySelector('.infoSection--alarms .infoSection-entries');
+  infoSectionEntires.innerHTML = '';
+  if (data.alarms) {
+    for (let alarm in data.alarms) {
+      infoSectionEntires.innerHTML += `<li>${parseAlarm(alarm)}<li>\n`;
+    }
+  }
+}
+
+function showInfo(data) {}
 
 function updateUI(data) {
   setBatteryStatus(data);
@@ -103,6 +140,7 @@ function updateUI(data) {
 
 async function fetchUpdate() {
   clearTimeout(updateTimeout)
+
   let data;
   try {
     data = await getJSON('/api/data.json');
