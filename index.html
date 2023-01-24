@@ -47,10 +47,10 @@
             <rect x="214.025" y="70" width="214" height="350" clip-path="url(#generator-clip)" style="fill: #000; opacity: 0.1"/>
           </svg>
           <p class="powerSource-info">Off</p>
-          <p class="powerSource-details">Since Jan 14th, 2:30PM</p>
+          <p class="powerSource-details"></p>
         </div>
 
-        <div class="powerSource powerSource--battery is-charging">
+        <div class="powerSource powerSource--battery is-off">
           <svg class="powerSource-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 370">
             <defs>
                 <clipPath id="battery-clip">
@@ -80,11 +80,11 @@
               <path d="m244.88,324.3c-3.72,0-7.46-1.23-10.57-3.77-7.13-5.84-8.18-16.36-2.35-23.49l27.78-33.95h-42.68c-6.45,0-12.33-3.72-15.09-9.54-2.76-5.83-1.92-12.73,2.16-17.72l50.09-61.22c5.85-7.14,16.35-8.19,23.5-2.35,7.13,5.84,8.18,16.36,2.35,23.49l-27.78,33.95h42.68c6.45,0,12.33,3.72,15.09,9.54,2.76,5.83,1.92,12.73-2.16,17.72l-50.09,61.22c-3.31,4.04-8.1,6.12-12.94,6.12Z" style="fill: #5ce6e6;"/>
             </g>
           </svg>
-          <p class="powerSource-info">100%</p>
-          <p class="powerSource-details">Charging</p>
+          <p class="powerSource-info">0%</p>
+          <p class="powerSource-details"></p>
         </div>
 
-        <div class="powerSource powerSource--grid">
+        <div class="powerSource powerSource--grid is-off">
           <svg class="powerSource-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 799.97">
             <g class="power-plant-cloud" style="transform-origin: 25% 50%">
               <path d="m278.28,0c-18.94,0-36.8,5.17-52.21,14.19-18.5,10.8-33.46,27.15-42.54,46.69-11.02-5.63-23.22-8.71-35.69-8.71-43.15,0-78.26,35.11-78.26,78.26s35.11,78.26,78.26,78.26h130.55c57.46-.05,104.22-46.85,104.22-104.34,0-57.55-46.8-104.34-104.34-104.34Z" style="fill: #d7ebff;"/>
@@ -113,12 +113,12 @@
             <path d="m773.88,799.97H26.09c-14.41,0-26.09-11.68-26.09-26.09h0c0-14.41,11.68-26.09,26.09-26.09h747.79c14.41,0,26.09,11.68,26.09,26.09h0c0,14.41-11.68,26.09-26.09,26.09Z" style="fill: #576573;"/>
             <path d="m773.88,747.79h-373.9v52.17h373.9c14.41,0,26.09-11.68,26.09-26.09,0-14.41-11.68-26.09-26.09-26.09Z" style="fill: #485566;"/>
           </svg>
-          <p class="powerSource-info">On</p>
-          <p class="powerSource-details">Since Jan 14th, 2:30PM</p>
+          <p class="powerSource-info">Off</p>
+          <p class="powerSource-details"></p>
         </div>
     </div>
 
-    <div class="infoSection infoSection--alarms">
+    <div class="infoSection infoSection--alarms" hidden>
       <svg class="infoSection-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 799.99 696.36">
         <path d="m695.64,696.36H104.44c-36.98,0-70.44-18.93-89.45-50.65-19.03-31.72-20-70.13-2.6-102.78L310.75,50.35C329.79,18.83,363.17,0,400.04,0s70.25,18.83,89.3,50.38l297.65,491.3c18.1,33.89,17.13,72.3-1.9,104.02-19.02,31.72-52.47,50.65-89.45,50.65h0Z" style="fill: #e48e15;"/>
         <path d="m695.64,696.36c36.98,0,70.44-18.93,89.45-50.65,19.03-31.72,20-70.13,1.9-104.02L489.34,50.38C470.29,18.83,436.9,0,400.04,0v696.36h295.6Z" style="fill: #e17c18;"/>
@@ -130,12 +130,11 @@
       <div class="infoSection-info">
         <strong class="infoSection-heading">Warning</strong>
         <ul class="infoSection-entries">
-          <li>Cell 7 voltage too high (level 1): <strong>3.7V</strong></li>
         </ul>
       </div>
     </div>
 
-    <div class="infoSection infoSection--info">
+    <div class="infoSection infoSection--info" hidden>
       <svg class="infoSection-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
         <circle cx="400" cy="400" r="400" style="fill: white"/>
         <path d="m400,30C195.65,30,30,195.65,30,400s165.65,370,370,370,370-165.66,370-370S604.34,30,400,30Zm59.08,290.95l-52.45,287.88c-1.05,5.34.59,10.65,4.47,14.69,3.88,4.05,9.56,6.37,15.57,6.37,7.37,0,13.33,5.24,13.33,11.72s-5.96,11.72-13.33,11.72h-59.75c-15.64,0-30.43-6-40.59-16.45-10.14-10.47-14.55-24.26-12.07-37.83l52.45-287.88c1.05-5.34-.59-10.65-4.47-14.69-3.88-4.05-9.56-6.37-15.57-6.37-7.37,0-13.33-5.24-13.33-11.72s5.96-11.72,13.33-11.72h59.75c15.64,0,30.43,6,40.59,16.46,10.14,10.47,14.54,24.26,12.07,37.83Zm-25.74-94.28c-25.73,0-46.67-20.94-46.67-46.67s20.94-46.67,46.67-46.67,46.67,20.94,46.67,46.67-20.94,46.67-46.67,46.67Z" style="fill: #1a9dff;"/>
@@ -147,14 +146,6 @@
         <strong class="infoSection-heading">Info</strong>
         <div class="infoSection-columns">
           <ul class="infoSection-entries">
-            <li>Pack Voltage: <strong>25.7V</strong></li>
-            <li>Pack Current: <strong>36A</strong></li>
-            <li>Pack SoC: <strong>80%</strong></li>
-          </ul>
-          <ul class="infoSection-entries">
-            <li>Pack Voltage: <strong>25.7V</strong></li>
-            <li>Pack Current: <strong>36A</strong></li>
-            <li>Pack SoC: <strong>80%</strong></li>
           </ul>
         </div>
       </div>

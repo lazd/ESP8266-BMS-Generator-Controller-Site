@@ -2,6 +2,10 @@
   --gap: 5rem;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 @property --charge-level {
   syntax: "<number>";
   inherits: false;
@@ -41,7 +45,7 @@ h1 {
 
 .infoSection-heading {
   margin: 0;
-  font-size: 1.5rem
+  font-size: 1.5rem;
   font-weight: 500;
 }
 
@@ -141,7 +145,7 @@ h1 {
 
 .powerSource--battery.is-charged .powerSource-chargeLevel {
   animation-name: unset;
-  --charge-level: 1;
+  --charge-level: 0;
 }
 
 .powerSource--battery .powerSource-chargeSymbol {

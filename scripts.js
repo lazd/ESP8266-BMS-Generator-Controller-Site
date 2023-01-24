@@ -16,11 +16,11 @@ function getJSON(url) {
     });
 
     req.addEventListener('error', (evt) => {
-      reject(evt);
+      reject(new Error('Request failed'));
     });
 
     req.addEventListener('abort', (evt) => {
-      reject(evt);
+      reject(new Error('Request aborted'));
     });
 
     req.open('GET', url);
@@ -36,7 +36,7 @@ const batteryStatusMap = new Map([
 ]);
 
 function getPowerSourceEls(selector) {
-  const powerSource = e.target.closest(selector);
+  const powerSource = document.querySelector(selector);
   if (powerSource) {
     const info = powerSource.querySelector('.powerSource-info');
     const details = powerSource.querySelector('.powerSource-details');
@@ -119,16 +119,23 @@ function parseAlarm(alarm, data) {
 }
 
 function showAlarms(data) {
-  let infoSectionEntires = document.querySelector('.infoSection--alarms .infoSection-entries');
+  let alarmInfoSection = document.querySelector('.infoSection--alarms');
+  let infoSectionEntires = alarmInfoSection.querySelector('.infoSection-entries');
   infoSectionEntires.innerHTML = '';
   if (data.alarms) {
+    alarmInfoSection.removeAttribute('hidden');
     for (let alarm in data.alarms) {
       infoSectionEntires.innerHTML += `<li>${parseAlarm(alarm)}<li>\n`;
     }
   }
+  else {
+    alarmInfoSection.setAttribute('hidden', '');
+  }
 }
 
-function showInfo(data) {}
+function showInfo(data) {
+  alarmInfoSection.removeAttribute('hidden');
+}
 
 function updateUI(data) {
   setBatteryStatus(data);
@@ -146,7 +153,7 @@ async function fetchUpdate() {
     data = await getJSON('/api/data.json');
   }
   catch(err) {
-    console.error(err);
+    console.error(`Failed to fetch data:`, err);
     return;
   }
 
@@ -155,4 +162,4 @@ async function fetchUpdate() {
   setTimeout(updateUI, UPDATE_INTERVAL);
 }
 
-updateUI();
+fetchUpdate();
