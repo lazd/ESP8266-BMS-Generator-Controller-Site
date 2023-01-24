@@ -126,7 +126,7 @@ function showAlarms(data) {
 
     const entryHTML = [];
     for (let alarm in data.alarms) {
-      entryHTML.push(`<li>${parseAlarm(alarm)}<li>\n`);
+      entryHTML.push(`<li>${parseAlarm(alarm)}</li>\n`);
     }
     infoSectionEntires.innerHTML = entryHTML.join('\n');
 }
@@ -138,11 +138,11 @@ function showAlarms(data) {
 const infoEntries = [
   ['packSOC', 'Charge Level', v => Math.floor(v * 100) + '%'],
   ['packVoltage', 'Voltage'],
-  ['packCurrent', 'Current', v => Math.floor(v * 100) + 'A'],
+  ['resCapacitymAh', 'Capacity', v => `${v.toLocaleString()}mAh`]
+  ['packCurrent', 'Current', v => Math.floor(v * 100).toLocaleString() + 'A'],
   ['bmsCycles', 'Cycles'],
-  ['cellDiff', 'Cell ΔV', v => `${v * 100}V`],
+  ['cellDiff', 'Cell ΔV', v => `${(v * 100).toLocaleString()}V`],
   ['cellBalanceActive', 'Balancing', v => v ? 'Yes' : 'No'],
-  ['resCapacitymAh', 'Remaining Capacity', v => `${v}mAh`]
 ];
 
 function showInfo(data) {
@@ -153,7 +153,7 @@ function showInfo(data) {
   const entryHTML = [];
   for (let [key, label, fn] of infoEntries) {
     const value = typeof fn === 'function' ? fn(data[key]) : data[key];
-    entryHTML.push(`<li>${label}: <strong>${value}</strong><li>`);
+    entryHTML.push(`<li>${label}: <strong>${value}</strong></li>`);
   }
   infoSectionEntires.innerHTML = entryHTML.join('\n');
 }

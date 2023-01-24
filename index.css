@@ -9,14 +9,15 @@
 }
 
 html {
-  font-size: 20px;
+  font-size: 18px;
   font-family: 'Kanit', Arial, Helvetica, sans-serif;
   background: rgb(35, 35, 35);
   color: white;
 
-  --gap: 5rem;
+  --gap: 4rem;
   --spacing: 2rem;
-  --powerSource-size: 12rem;
+  --powerSource-size: 100%;
+  --border-radius: 1rem;
 }
 
 html,
@@ -30,18 +31,37 @@ h1 {
   margin: 2rem;
 }
 
-.infoSection {
+.infoSections {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: var(--spacing);
+
+  margin-inline: auto;
+  margin-block: var(--gap);
+  padding-inline: var(--gap);
+
+  max-width: 54rem;
+}
+
+.infoSection {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: row;
+  align-items: start;
   max-width: 40rem;
-  margin: var(--spacing);
+  white-space: nowrap;
   gap: 1rem;
+
+  background: rgba(255, 255, 255, 0.125);
+  border-radius: var(--border-radius);
+  padding: calc(var(--spacing) / 1.5);
 }
 
 .infoSection-icon {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
 }
 
 .infoSection-heading {
@@ -53,18 +73,12 @@ h1 {
 .infoSection-entries {
   list-style: none;
   margin-block: 0.5rem 0;
-  padding-inline: 0.25rem 0;
+  padding-inline: 0.125rem 0;
   font-size: 1rem;
 }
 
 .infoSection-entries strong {
-  opacity: 0.7;
-}
-
-.infoSection-columns {
-  display: flex;
-  flex-direction: row;
-  gap: 2rem
+  opacity: 0.75;
 }
 
 .powerSources {
@@ -72,7 +86,6 @@ h1 {
   display: flex;
   align-items: start;
   justify-content: center;
-  flex-wrap: wrap;
   gap: var(--gap);
   margin: var(--gap);
 }
@@ -98,8 +111,10 @@ h1 {
 .home,
 .powerSource-icon {
   display: block;
-  width: var(--powerSource-size);
-  height: var(--powerSource-size);
+  width: 100%;
+  height: 100%;
+  max-width: 10rem;
+  aspect-ratio: 1;
 }
 
 .home {
@@ -141,13 +156,12 @@ h1 {
 
 .powerSource--battery.is-charging .powerSource-chargeLevel {
   animation-play-state: running;
-  --charge-level: 1;
   transition: --charge-level 0.5s ease-out;
 }
 
 .powerSource--battery.is-charged .powerSource-chargeLevel {
   animation-name: unset;
-  --charge-level: 0;
+  --charge-level: 1;
 }
 
 .powerSource--battery .powerSource-chargeSymbol {
@@ -202,11 +216,16 @@ h1 {
   }
 }
 
+@media only screen and (max-width: 1024px) {
+  html {
+    font-size: 16px;
+    --gap: 3rem;
+  }
+}
+
 @media only screen and (max-width: 600px) {
   html {
     font-size: 14px;
-
     --gap: 1.5rem;
-    --powerSource-size: 6.5rem;
-}
+  }
 }
