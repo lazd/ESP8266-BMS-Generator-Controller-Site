@@ -1,4 +1,4 @@
-const UPDATE_INTERVAL = 1000;
+const UPDATE_INTERVAL = 500;
 let updateTimeout;
 
 function getJSON(url) {
@@ -102,6 +102,19 @@ function setGridStatus(data) {
   }
 }
 
+function setInverterStatus(data) {
+  const { powerSource, info, details } = getPowerSourceEls('.powerSource--inverter');
+
+  if (data.inverterOn) {
+    powerSource.classList.remove('is-off');
+    info.innerText = 'On';
+  }
+  else {
+    powerSource.classList.add('is-off');
+    info.innerText = 'Off';
+  }
+}
+
 const alarmMap = new Map([
   ['levelOneCellVoltageTooHigh', (data) => `Cell ${data.maxCellVNum} voltage too high (level 1): <strong>${data.maxCellmV}</strong>`],
   ['levelTwoCellVoltageTooHigh', (data) => `Cell ${data.maxCellVNum} voltage too high (level 2): <strong>${data.maxCellmV}</strong>`],
@@ -138,7 +151,7 @@ function showAlarms(data) {
 const infoEntries = [
   ['packSOC', 'Charge Level', v => Math.floor(v * 100) + '%'],
   ['packVoltage', 'Voltage'],
-  ['resCapacitymAh', 'Capacity', v => `${v.toLocaleString()}mAh`]
+  ['resCapacitymAh', 'Capacity', v => `${v.toLocaleString()}mAh`],
   ['packCurrent', 'Current', v => Math.floor(v * 100).toLocaleString() + 'A'],
   ['bmsCycles', 'Cycles'],
   ['cellDiff', 'Cell ΔV', v => `${(v * 100).toLocaleString()}V`],
@@ -162,6 +175,7 @@ function updateUI(data) {
   setBatteryStatus(data);
   setGridStatus(data);
   setGeneratorStatus(data);
+  setInverterStatus(data);
   showAlarms(data);
   showInfo(data);
 }
