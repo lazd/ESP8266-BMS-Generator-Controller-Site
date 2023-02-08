@@ -1,9 +1,10 @@
-const UPDATE_INTERVAL = 500;
+const UPDATE_INTERVAL = 2000;
 let updateTimeout;
 
 function getJSON(url) {
   return new Promise((resolve, reject) => {
     const req = new XMLHttpRequest();
+    req.timeout = 5000;
     req.addEventListener('load', () => {
       let object;
       try {
@@ -23,16 +24,19 @@ function getJSON(url) {
       reject(new Error('Request aborted'));
     });
 
+    req.addEventListener('timeout', (evt) => {
+      reject(new Error('Request timed out'));
+    });
+
     req.open('GET', url);
     req.send();
   });
 }
 
 const batteryStatusMap = new Map([
-  [-1, 'Offline'],
-  [0, 'Standby'],
-  [1, 'Charging'],
-  [2, 'Discharging']
+  ['Stationary', 'Standby'],
+  ['Charge', 'Charging'],
+  ['Discharge', 'Discharging']
 ]);
 
 function getPowerSourceEls(selector) {
@@ -51,13 +55,23 @@ function getPowerSourceEls(selector) {
 function setBatteryStatus(data) {
   const { powerSource, info, details } = getPowerSourceEls('.powerSource--battery')
   
+  if (data.bmsCommunicationStatus) {
+    powerSource.classList.add('is-on');
+    powerSource.classList.remove('is-off');
+  }
+  else {
+    powerSource.classList.add('is-off');
+    powerSource.classList.remove('is-on');
+    return;
+  }
+
   const batteryFillEl = powerSource.querySelector('.powerSource-chargeLevel');
-  batteryFillEl.style.setProperty('--charge-level', data.packSOC);
+  batteryFillEl.style.setProperty('--charge-level', data.packSOC / 100);
   
-  info.innerText = Math.floor(data.packSOC * 100) + '%';
+  info.innerText = Math.floor(data.packSOC) + '%';
   details.innerText = batteryStatusMap.get(data.chargeDischargeStatus);
 
-  if (data.chargeDischargeStatus === 1) {
+  if (data.chargeDischargeStatus === 'Charge') {
     powerSource.classList.add('is-charging');
     powerSource.classList.remove('is-charged');
   }
@@ -116,10 +130,10 @@ function setInverterStatus(data) {
 }
 
 const alarmMap = new Map([
-  ['levelOneCellVoltageTooHigh', (data) => `Cell ${data.maxCellVNum} voltage too high (level 1): <strong>${data.maxCellmV}</strong>`],
-  ['levelTwoCellVoltageTooHigh', (data) => `Cell ${data.maxCellVNum} voltage too high (level 2): <strong>${data.maxCellmV}</strong>`],
-  ['levelTwoCellVoltageTooLow', (data) => `Cell ${data.minCellVNum} voltage too low (level 2): <strong>${data.minCellmV}</strong>`],
-  ['levelTwoCellVoltageTooLow', (data) => `Cell ${data.minCellVNum} voltage too low (level 2): <strong>${data.minCellmV}</strong>`],
+  ['levelOneCellVoltageTooHigh', (data) => `Cell ${data.maxCellVNum} voltage too high (level 1): <strong>${data.maxCellmV / 1000}</strong>`],
+  ['levelTwoCellVoltageTooHigh', (data) => `Cell ${data.maxCellVNum} voltage too high (level 2): <strong>${data.maxCellmV / 1000}</strong>`],
+  ['levelTwoCellVoltageTooLow', (data) => `Cell ${data.minCellVNum} voltage too low (level 2): <strong>${data.minCellmV / 1000}</strong>`],
+  ['levelTwoCellVoltageTooLow', (data) => `Cell ${data.minCellVNum} voltage too low (level 2): <strong>${data.minCellmV / 1000}</strong>`],
 ]);
 
 function parseAlarm(alarm, data) {
@@ -134,12 +148,14 @@ function parseAlarm(alarm, data) {
 function showAlarms(data) {
   let alarmInfoSection = document.querySelector('.infoSection--alarms');
   let infoSectionEntires = alarmInfoSection.querySelector('.infoSection-entries');
-  if (data.alarms) {
+  if (data.alarms && Object.values(data.alarms).filter(Boolean).length != 0) {
     alarmInfoSection.removeAttribute('hidden');
 
     const entryHTML = [];
     for (let alarm in data.alarms) {
-      entryHTML.push(`<li>${parseAlarm(alarm)}</li>\n`);
+      if (data.alarms[alarm]) {
+        entryHTML.push(`<li>${parseAlarm(alarm, data)}</li>\n`);
+      }
     }
     infoSectionEntires.innerHTML = entryHTML.join('\n');
 }
@@ -149,13 +165,13 @@ function showAlarms(data) {
 }
 
 const infoEntries = [
-  ['packSOC', 'Charge Level', v => Math.floor(v * 100) + '%'],
-  ['packVoltage', 'Voltage'],
+  ['packSOC', 'Charge Level', v => Math.floor(v) + '%'],
+  ['packVoltage', 'Voltage', v => `${v.toLocaleString()}V`],
   ['resCapacitymAh', 'Capacity', v => `${v.toLocaleString()}mAh`],
-  ['packCurrent', 'Current', v => Math.floor(v * 100).toLocaleString() + 'A'],
-  ['bmsCycles', 'Cycles'],
-  ['cellDiff', 'Cell ΔV', v => `${(v * 100).toLocaleString()}V`],
-  ['cellBalanceActive', 'Balancing', v => v ? 'Yes' : 'No'],
+  ['packCurrent', 'Current', v => v.toLocaleString() + 'A'],
+  ['bmsCycles', 'Cycles', v => v.toLocaleString()],
+  ['cellDiff', 'Cell ΔV', v => `${(v / 1000).toLocaleString()}V`],
+  // ['cellBalanceActive', 'Balancing', v => v ? 'Yes' : 'No'],
 ];
 
 function showInfo(data) {
@@ -165,6 +181,9 @@ function showInfo(data) {
 
   const entryHTML = [];
   for (let [key, label, fn] of infoEntries) {
+    if (data[key] === null || data[key] === undefined) {
+      continue;
+    }
     const value = typeof fn === 'function' ? fn(data[key]) : data[key];
     entryHTML.push(`<li>${label}: <strong>${value}</strong></li>`);
   }
@@ -186,13 +205,11 @@ async function fetchUpdate() {
   let data;
   try {
     data = await getJSON('/api/data.json');
+    updateUI(data);
   }
   catch(err) {
     console.error(`Failed to fetch data:`, err);
-    return;
   }
-
-  updateUI(data);
 
   setTimeout(fetchUpdate, UPDATE_INTERVAL);
 }
