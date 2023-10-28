@@ -77,8 +77,22 @@ h1 {
   font-size: 1rem;
 }
 
+.infoSection-entries li {
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+  align-items: flex-start;
+}
+
 .infoSection-entries strong {
   opacity: 0.75;
+}
+
+td {
+  padding: 0 0.25rem;
+}
+table {
+  border-collapse: collapse;
 }
 
 .powerSources {

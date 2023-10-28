@@ -130,10 +130,10 @@ function setInverterStatus(data) {
 }
 
 const alarmMap = new Map([
-  ['levelOneCellVoltageTooHigh', (data) => `Cell ${data.maxCellVNum} voltage too high (level 1): <strong>${data.maxCellmV / 1000}</strong>`],
-  ['levelTwoCellVoltageTooHigh', (data) => `Cell ${data.maxCellVNum} voltage too high (level 2): <strong>${data.maxCellmV / 1000}</strong>`],
-  ['levelTwoCellVoltageTooLow', (data) => `Cell ${data.minCellVNum} voltage too low (level 2): <strong>${data.minCellmV / 1000}</strong>`],
-  ['levelTwoCellVoltageTooLow', (data) => `Cell ${data.minCellVNum} voltage too low (level 2): <strong>${data.minCellmV / 1000}</strong>`],
+  ['levelOneCellVoltageTooHigh', (data) => `Cell ${data.maxCellVNum} voltage too high (level 1): <strong>${data.maxCellmV / 1000}V</strong>`],
+  ['levelTwoCellVoltageTooHigh', (data) => `Cell ${data.maxCellVNum} voltage too high (level 2): <strong>${data.maxCellmV / 1000}V</strong>`],
+  ['levelTwoCellVoltageTooLow', (data) => `Cell ${data.minCellVNum} voltage too low (level 2): <strong>${data.minCellmV / 1000}V</strong>`],
+  ['levelTwoCellVoltageTooLow', (data) => `Cell ${data.minCellVNum} voltage too low (level 2): <strong>${data.minCellmV / 1000}V</strong>`],
 ]);
 
 function parseAlarm(alarm, data) {
@@ -166,12 +166,15 @@ function showAlarms(data) {
 
 const infoEntries = [
   ['packSOC', 'Charge Level', v => Math.floor(v) + '%'],
+  ['packVoltage', 'Wattage', (v, data) => `${(v * data.packCurrent / 1000).toLocaleString()}kW`],
   ['packVoltage', 'Voltage', v => `${v.toLocaleString()}V`],
-  ['resCapacitymAh', 'Capacity', v => `${v.toLocaleString()}mAh`],
   ['packCurrent', 'Current', v => v.toLocaleString() + 'A'],
-  ['bmsCycles', 'Cycles', v => v.toLocaleString()],
+  ['resCapacitymAh', 'Capacity', v => `${(v / 1000).toLocaleString()}Ah`],
+  ['tempAverage', 'Temperature', v => `${(v * 9/5 + 32).toFixed(1)}°F`],
   ['cellDiff', 'Cell ΔV', v => `${(v / 1000).toLocaleString()}V`],
-  // ['cellBalanceActive', 'Balancing', v => v ? 'Yes' : 'No'],
+  ['bmsCycles', 'Cycles', v => v.toLocaleString()],
+  ['cellBalanceActive', 'Balancing', v => v ? 'Yes' : 'No'],
+  ['cellVoltages', 'Cells', vs => '<table><tr>' + vs.map((v, i) => (v / 1000).toFixed(3) + 'V' + ((i+1 === (vs.length / 2)) ? '</tr><tr>' : '')).map(v => `<td>${v}</td>`).join(' ') + '</tr></table>'],
 ];
 
 function showInfo(data) {
@@ -184,13 +187,18 @@ function showInfo(data) {
     if (data[key] === null || data[key] === undefined) {
       continue;
     }
-    const value = typeof fn === 'function' ? fn(data[key]) : data[key];
-    entryHTML.push(`<li>${label}: <strong>${value}</strong></li>`);
+    const value = typeof fn === 'function' ? fn(data[key], data) : data[key];
+    entryHTML.push(`<li><span>${label}:</span><strong>${value}</strong></li>`);
   }
   infoSectionEntires.innerHTML = entryHTML.join('\n');
 }
 
 function updateUI(data) {
+  // Patch for now until we have real data from a relay
+  if (data.packCurrent > 10 && data.chargeDischargeStatus === 'Discharge') {
+    data.inverterOn = true;
+  }
+
   setBatteryStatus(data);
   setGridStatus(data);
   setGeneratorStatus(data);
