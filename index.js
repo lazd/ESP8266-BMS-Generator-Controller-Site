@@ -194,11 +194,6 @@ function showInfo(data) {
 }
 
 function updateUI(data) {
-  // Patch for now until we have real data from a relay
-  if (data.packCurrent > 10 && data.chargeDischargeStatus === 'Discharge') {
-    data.inverterOn = true;
-  }
-
   setBatteryStatus(data);
   setGridStatus(data);
   setGeneratorStatus(data);
