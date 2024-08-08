@@ -170,6 +170,11 @@ const infoEntries = [
   ['packVoltage', 'Voltage', v => `${v.toLocaleString()}V`],
   ['packCurrent', 'Current', v => v.toLocaleString() + 'A'],
   ['resCapacitymAh', 'Capacity', v => `${(v / 1000).toLocaleString()}Ah`],
+  ['runTimeHours', 'Run time', v => {
+    const d = new Date(0,0);
+    d.setSeconds(parseFloat(v) * 60 * 60);
+    return d.toTimeString().slice(0, 6);
+  }],
   ['tempAverage', 'Temperature', v => `${(v * 9/5 + 32).toFixed(1)}°F`],
   ['cellDiff', 'Cell ΔV', v => `${(v / 1000).toLocaleString()}V`],
   ['bmsCycles', 'Cycles', v => v.toLocaleString()],
